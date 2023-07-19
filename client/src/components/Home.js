@@ -24,6 +24,7 @@ export const Home = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     console.log("call");
@@ -34,6 +35,7 @@ export const Home = () => {
   }, []);
 
   const handleUpload = async () => {
+    setLoading(true);
     setIsModalOpen(true);
     try {
       const formData = new FormData();
@@ -55,7 +57,8 @@ export const Home = () => {
       if (response.ok) {
         toast.success("File uploaded successfully");
         setFile(null);
-        setIsModalOpen(false);
+        setLoading(false);
+        // setIsModalOpen(false);
 
         // Perform any additional actions upon successful file upload
       } else {
@@ -84,6 +87,7 @@ export const Home = () => {
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
         handleUpload={handleUpload}
+        loading={loading}
       />
       <Listings
         onUpload={() => setIsModalOpen(true)}

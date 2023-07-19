@@ -1,23 +1,26 @@
-import { SendOutlined } from "@ant-design/icons";
-import { Button, Collapse } from "antd";
-import Input from "rc-input";
+import { SendOutlined, MessageOutlined } from "@ant-design/icons";
+import { Button, Collapse, Input } from "antd";
+
 import React, { useEffect, useState } from "react";
 import moment from "moment";
 import "./CommentCollapse.css";
 import NameCircle from "./NameCirlce";
 import { toast } from "react-toastify";
 import { url } from "../config";
+import NestedComment from "./NestedComment";
 
 const { Panel } = Collapse;
 
 const CommentCollapse = ({ isCollapseOpen, file, fetchListings }) => {
   const [commentInput, setCommentInput] = useState("");
+  const [commentBoxOpen, setCommentBoxOpen] = useState(false);
+  const [selectedCommentId, setSelectedCommentId] = useState("");
+
+  // const [nestedComments, setNestedComments] = useState([]);
 
   const handleCommentChange = (e) => {
     setCommentInput(e.target.value);
   };
-
-  useEffect(() => {}, []);
 
   const handleSendComment = async () => {
     const accessToken = localStorage.getItem("access_token");
@@ -28,23 +31,21 @@ const CommentCollapse = ({ isCollapseOpen, file, fetchListings }) => {
           "Content-Type": "application/json",
           Authorization: `${accessToken}`,
         },
-        body: JSON.stringify({ fileId: file._id, comment: commentInput }),
+        body: JSON.stringify({
+          fileId: file._id,
+          comment: commentInput,
+        }),
       });
 
       const data = await response.json();
       if (response.ok) {
-        // console.log("Comment added successfully");
         fetchListings();
         setCommentInput("");
-
-        // Perform any additional actions upon successful comment submission
       } else {
         toast.error("Error:", data.message);
-        // Handle the error condition appropriately
       }
     } catch (error) {
       toast.error("Error:", error);
-      // Handle any network or other errors
     }
   };
 
@@ -53,6 +54,22 @@ const CommentCollapse = ({ isCollapseOpen, file, fetchListings }) => {
       handleSendComment();
     }
   };
+
+  const handleCommentBox = () => {
+    setCommentBoxOpen(!commentBoxOpen);
+  };
+
+  const handleCommentBox1 = (commentId) => {
+    console.log({ commentId });
+    if (commentBoxOpen && selectedCommentId === commentId) {
+      setCommentBoxOpen(false);
+    } else {
+      setCommentBoxOpen(true);
+      setSelectedCommentId(commentId);
+    }
+  };
+
+  console.log({ file });
 
   return (
     <div className="comment-container">
@@ -71,12 +88,33 @@ const CommentCollapse = ({ isCollapseOpen, file, fetchListings }) => {
                       <span className="comment-time">
                         {moment(comment.createdAt).fromNow()}
                       </span>
+                      {/* <span className="comment-time">{comment._id}</span> */}
                     </div>
                   </div>
                 </div>
                 <div className="comment-text">
                   {" "}
                   <span className="share-email">{comment.text}</span>
+                  <div>
+                    {comment?.comments?.map((el) => (
+                      <div className="comment-child" key={el._id}>
+                        {" "}
+                        {el.text}
+                      </div>
+                    ))}
+                  </div>
+                  <MessageOutlined
+                    onClick={() => handleCommentBox1(comment._id)}
+                  />
+                  {commentBoxOpen && selectedCommentId === comment._id && (
+                    <NestedComment
+                      commentId={comment._id}
+                      fileId={file._id}
+                      fetchListings={fetchListings}
+                      commentBoxOpen={commentBoxOpen}
+                      setCommentBoxOpen={setCommentBoxOpen}
+                    />
+                  )}
                 </div>
               </div>
             </div>

@@ -1,4 +1,4 @@
-import { Button, Modal } from "antd";
+import { Button, Modal, Spin } from "antd";
 import React from "react";
 
 const UploadModal = ({
@@ -7,6 +7,7 @@ const UploadModal = ({
   isModalOpen,
   setIsModalOpen,
   handleUpload,
+  loading,
 }) => {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -36,6 +37,7 @@ const UploadModal = ({
         onCancel={closeModal}
         title="File Upload"
         footer={[
+          <span> {loading ? <Spin /> : null},</span>,
           <Button key="upload" type="primary" onClick={handleUpload}>
             Upload
           </Button>,

@@ -61,3 +61,18 @@
 .comment-text {
   margin: 5px 0px 0px 5px;
 }
+
+.comment-child {
+  display: flex;
+  flex-direction: column;
+}
+.share-email1 {
+  margin-left: 10px;
+}
+
+.comment-child {
+  margin-left: 6px;
+  display: flex;
+  flex-direction: column;
+  /* background: #f9f9ff; */
+}

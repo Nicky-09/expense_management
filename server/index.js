@@ -19,11 +19,6 @@ app.use(
 );
 app.use(Router);
 
-const uploadFolder = path.join(__dirname, "public");
-
-// Serve static files from the upload folder
-app.use("/public", express.static(uploadFolder));
-
 mongoose
   .connect(process.env.MONGO_DB_URI, {
     useNewUrlParser: true,

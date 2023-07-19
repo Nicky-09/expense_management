@@ -24,8 +24,20 @@ const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isChecked, setIsChecked] = useState(false);
+  const [validEmail, setValidEmail] = useState(false);
+
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  const CheckEmailValidation = () => {
+    if (email.match(emailRegex)) {
+      setValidEmail(true);
+    } else setValidEmail(false);
+    return <div>{validEmail ? "Valid" : "Incorrect"}</div>;
+  };
 
   const handleSubmit = async (e) => {
+    console.log(email);
+
     e.preventDefault();
     try {
       const response = await fetch(`${url}/login`, {
@@ -80,6 +92,7 @@ const LoginForm = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
+              <CheckEmailValidation />
               {/* <label className="label" htmlFor="password">
                 Password
               </label> */}

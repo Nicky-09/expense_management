@@ -14,6 +14,7 @@ const Listings = ({ onUpload, handleUpload }) => {
 
   const { Search } = Input;
   const accessToken = localStorage.getItem("access_token");
+
   const fetchListings = async () => {
     try {
       const response = await fetch(`${url}/listings`, {
