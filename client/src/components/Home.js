@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
-import Listings from "./Listings";
-import { ToastContainer, toast } from "react-toastify";
+
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { useNavigate } from "react-router-dom";
-import { url } from "../config";
-import UploadModal from "./UploadModal";
+import Navbar from "./Navbar";
+import AddTransactionForm from "./AddTransactionForm";
+import { Button, Drawer } from "antd";
+
+import TransactionDetail from "./TransactionDetail";
 
 function HomeFrame() {
   const style = {
@@ -22,9 +25,15 @@ function HomeFrame() {
 
 export const Home = () => {
   const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [file, setFile] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
+
+  const showDrawer = () => {
+    setOpen(true);
+  };
+
+  const onClose = () => {
+    setOpen(false);
+  };
 
   useEffect(() => {
     console.log("call");
@@ -34,70 +43,24 @@ export const Home = () => {
     }
   }, []);
 
-  const handleUpload = async () => {
-    setLoading(true);
-    setIsModalOpen(true);
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const accessToken = localStorage.getItem("access_token");
-
-      const response = await fetch(`${url}/file/upload`, {
-        method: "POST",
-        headers: {
-          Authorization: `${accessToken}`,
-        },
-        body: formData,
-      });
-
-      const data = await response.json();
-      // Handle the response data
-
-      if (response.ok) {
-        toast.success("File uploaded successfully");
-        setFile(null);
-        setLoading(false);
-        // setIsModalOpen(false);
-
-        // Perform any additional actions upon successful file upload
-      } else {
-        toast.error("Error:", data.message);
-        // Handle the error condition appropriately
-      }
-    } catch (error) {
-      toast.error("Error:", error);
-      // Handle any network or other errors
-    }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    // setLoggedIn(false);
-    navigate("/login");
-  };
-
   return (
     <div>
       <ToastContainer />
       <HomeFrame />
-      <UploadModal
-        file={file}
-        setFile={setFile}
-        isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}
-        handleUpload={handleUpload}
-        loading={loading}
-      />
-      <Listings
-        onUpload={() => setIsModalOpen(true)}
-        handleUpload={handleUpload}
-        onLogout={handleLogout}
-        file={file}
-        setFile={setFile}
-        isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}
-      />
+      <Navbar />
+      <Button type="primary" onClick={showDrawer}>
+        Open
+      </Button>
+      <TransactionDetail />
+
+      <Drawer
+        title="Basic Drawer"
+        placement="right"
+        onClose={onClose}
+        open={open}
+      >
+        <AddTransactionForm />
+      </Drawer>
     </div>
   );
 };

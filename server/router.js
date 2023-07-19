@@ -1,6 +1,6 @@
 const Router = require("express").Router();
 const bcrypt = require("bcrypt");
-const { Users, Files, Comments } = require("./schema");
+const { Users, Transactions, Comments } = require("./schema");
 const jwt = require("jsonwebtoken");
 const path = require("path");
 const fs = require("fs");
@@ -94,6 +94,53 @@ Router.post("/login", async (req, res) => {
   } catch (error) {
     console.log("/login -error ", error);
     res.status(500).json({ message: "Internal server error", success: false });
+  }
+});
+
+// Add a new transaction
+Router.post("/transactions", authorize, async (req, res) => {
+  const { userId } = req.user;
+  console.log({ userId });
+  try {
+    console.log("first");
+    const { category, amount, description, date } = req.body;
+    const newTransaction = new Transactions({
+      user: userId,
+      category,
+      amount,
+      description,
+      date,
+    });
+    console.log({ newTransaction });
+    await newTransaction.save();
+    res.status(201).json(newTransaction);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+// Get all transactions for a user
+Router.get("/transactions", authorize, async (req, res) => {
+  const { userId } = req.user;
+  try {
+    const transactions = await Transactions.find({ user: userId });
+    res.json(transactions);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+// Delete a transaction
+Router.delete("/transactions/:id", async (req, res) => {
+  try {
+    const transaction = await Transactions.findById(req.params.id);
+    if (!transaction) {
+      return res.status(404).json({ message: "Transaction not found" });
+    }
+    await transaction.remove();
+    res.json({ message: "Transaction deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error" });
   }
 });
 
