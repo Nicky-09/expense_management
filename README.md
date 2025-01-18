@@ -1,6 +1,8 @@
 
 # DocuShare
 
+
+
 **DocuShare** is a web application that provides user signup and authentication, file upload and storage, a dashboard to view uploaded files, file sharing functionality, and commenting features.
 ## Demo
 
